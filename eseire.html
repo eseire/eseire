@@ -79,17 +79,6 @@
             filter: drop-shadow(#000000 1px 0 7px);
         }
 
-        /* Particle effect container around username */
-        .particle-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 3;
-        }
-
         .icon-container {
             display: flex;
             justify-content: center;
@@ -144,13 +133,19 @@
             width: 3px;
             height: 3px;
             background: white;
-            opacity: 0.4;
-            animation: fall linear infinite;
+            opacity: 0.5;
+            animation: fall linear infinite; /* Make it infinite */
         }
 
         @keyframes fall {
-            0% { transform: translateY(0) translateX(0); opacity: 0.2; }
-            100% { transform: translateY(120vh) translateX(calc(-10px + 20px * var(--direction))); opacity: 0; }
+            0% {
+                transform: translateY(0) translateX(0); /* Start at the top */
+                opacity: 0.5; /* Start with full opacity */
+            }
+            100% {
+                transform: translateY(120vh) translateX(calc(-10px + 20px * var(--direction))); /* Fall to the bottom */
+                opacity: 0; /* Fade out as it falls */
+            }
         }
 
     </style>
@@ -170,7 +165,6 @@
 <div class="profile-container">
     <div class="profile-pic"></div>
     <div class="username" id="username">eseire</div>
-    <div class="particle-container" id="particleContainer"></div> <!-- Particle container -->
     <div class="icon-container">
         <a href="https://discord.com/users/1299128956255207494" target="_blank">
             <img src="assets/discord_logo.svg" class="icon" alt="Discord">
@@ -184,6 +178,7 @@
     </div>
 </div>
 
+<!-- Rain Effect -->
 <div class="rain" id="rainEffect"></div>
 
 <audio id="backgroundMusic" loop>
@@ -195,15 +190,38 @@
     // Generate raindrops with random positions and speeds
     const rainContainer = document.getElementById('rainEffect');
     const raindropCount = 100;
+    const maxRaindropDuration = 3;
 
-    for (let i = 0; i < raindropCount; i++) {
+    function createRaindrop() {
         const raindrop = document.createElement('div');
         raindrop.classList.add('raindrop');
+        
+        // Set random horizontal position
         raindrop.style.left = Math.random() * 100 + 'vw';
-        raindrop.style.animationDuration = 2 + Math.random() * 1 + 's';
+        
+        // Set random animation duration (speed of fall)
+        const duration = 2 + Math.random() * maxRaindropDuration; // Random duration for falling
+        raindrop.style.animationDuration = `${duration}s`;
+        
+        // Set random animation delay (so that raindrops start at different times)
         raindrop.style.animationDelay = Math.random() * -5 + 's';
+        
+        // Random direction to make rain look more natural
         raindrop.style.setProperty('--direction', Math.random() * 2 - 1);
+
+        // Append to rain container
         rainContainer.appendChild(raindrop);
+
+        // Remove the raindrop after its animation ends, to keep the DOM clean
+        raindrop.addEventListener('animationiteration', () => {
+            raindrop.remove();
+            createRaindrop();  // Create a new raindrop when one finishes falling
+        });
+    }
+
+    // Create initial raindrops and continuously generate more
+    for (let i = 0; i < raindropCount; i++) {
+        createRaindrop();
     }
 
     // Play the background music and start video after overlay fade-out
@@ -239,36 +257,42 @@
 
     // Typing and Deleting Effect for browser title
     const originalTitle = "@eseire";
-    const deleteSpeed = 300; // Speed for deleting characters
-    const typeSpeed = 300; // Speed for typing characters
-    let index = 0;
-    let isDeleting = false;
+    const deleteSpeed = 300; // Speed for deleting text in milliseconds
+    const typingSpeed = 150; // Speed for typing text in milliseconds
 
-    // Function to update the title character by character
-    function animateTitle() {
-        if (!isDeleting) {
-            if (index < originalTitle.length) {
-                document.title = originalTitle.substring(0, index + 1);
-                index++;
-                setTimeout(animateTitle, typeSpeed); // Type characters
-            } else {
-                isDeleting = true;
-                setTimeout(animateTitle, 0); // Pause before starting to delete
-            }
+    let titleIndex = 0;
+    let titleDeleteIndex = originalTitle.length;
+
+    // Typing effect function
+    function typeTitle() {
+        if (titleIndex < originalTitle.length) {
+            document.title += originalTitle.charAt(titleIndex);
+            titleIndex++;
+            setTimeout(typeTitle, typingSpeed);
         } else {
-            if (index > 1) {
-                document.title = originalTitle.substring(0, index - 1);
-                index--;
-                setTimeout(animateTitle, deleteSpeed); // Delete characters
-            } else {
-                isDeleting = false;
-                setTimeout(animateTitle, 0); // Pause before starting to type again
-            }
+            setTimeout(deleteTitle, 500); // Start deleting after typing
         }
     }
 
-    // Start the title animation
-    animateTitle();
+    // Deleting effect function
+    function deleteTitle() {
+        if (titleDeleteIndex >= 0) {
+            document.title = document.title.slice(0, titleDeleteIndex);
+            titleDeleteIndex--;
+            setTimeout(deleteTitle, deleteSpeed);
+        } else {
+            titleIndex = 0;
+            titleDeleteIndex = originalTitle.length;
+            setTimeout(typeTitle, 1000); // Start typing again after deleting
+        }
+    }
+
+    // Start the typing effect when the page loads
+    window.onload = () => {
+        typeTitle();
+        video.style.display = 'none';  // Hide video initially
+    };
+
 </script>
 
 </body>
