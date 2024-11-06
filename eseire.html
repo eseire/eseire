@@ -40,17 +40,11 @@
             height: 100vh;
             object-fit: cover;
             z-index: 0;
-            display: none;
+            display: none; /* Hidden initially */
             background-color: #000000;
-            opacity: 0;
-            pointer-events: none; /* Prevent any interaction with the video */
-            animation: fadeIn 2s ease-in-out forwards; /* Fade-in animation */
-        }
-
-        /* Fade-in animation for video */
-        @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
+            opacity: 0; /* Initially hidden */
+            pointer-events: none; /* Prevent interaction with video */
+            transition: opacity 2s ease-in-out; /* Fade-in animation */
         }
 
         .profile-container {
@@ -115,6 +109,7 @@
             transform: scale(1.2); /* Scale the icon by 20% */
         }
 
+        /* Black Overlay */
         .black-overlay {
             position: fixed;
             top: 0;
@@ -129,7 +124,7 @@
             align-items: center;
             cursor: url('assets/cursor.cur'), auto; /* Custom cursor for overlay */
             opacity: 1;
-            transition: opacity 0.5s ease;
+            transition: opacity 2s ease; /* Slow fade-out */
         }
 
         .rain {
@@ -158,14 +153,6 @@
             100% { transform: translateY(120vh) translateX(calc(-10px + 20px * var(--direction))); opacity: 0; }
         }
 
-        /* Media Query for Mobile Devices */
-        @media (max-width: 768px) {
-            #backgroundVideo {
-                width: 100%;
-                height: auto;
-                max-height: 50vh; /* Set max height for mobile */
-            }
-        }
     </style>
 </head>
 <body>
@@ -237,14 +224,17 @@
             }
         }, 200);
 
-        // Fade out overlay and show video
-        blackOverlay.style.opacity = '0';
+        // Start fading out the overlay and fading in the video at the same time
+        blackOverlay.style.opacity = '0';  // Fade out overlay
+        video.style.display = 'block';  // Show video
+        video.style.opacity = '1';  // Start fading in video
+
+        // Play the video after the fade-in starts
+        video.play();
 
         setTimeout(() => {
-            blackOverlay.style.display = 'none';
-            video.style.display = 'block';
-            video.play();
-        }, 0);
+            blackOverlay.style.display = 'none'; // Hide the overlay completely after fade
+        }, 2000); // Ensure the overlay fades out before it's hidden
     });
 
     // Typing and Deleting Effect for browser title
