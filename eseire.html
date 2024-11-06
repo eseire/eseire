@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@eseire</title>
+    
+    <!-- Favicon link (add your logo file path) -->
+    <link rel="icon" href="assets/logo.ico" type="image/x-icon"> <!-- Replace 'assets/logo.ico' with your actual logo file path -->
+    
+    <!-- Google Fonts Link -->
+    <link href="https://fonts.google.com/noto/specimen/Noto+Sans+Display?preview.text=misery302&query=ancient" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            background-color: #000000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden;
+            position: relative;
+            cursor: url('assets/cursor.cur'), auto; /* Custom cursor */
+        }
+
+        /* Video Background Styling */
+        #backgroundVideo {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            z-index: 0;
+            display: none;
+            background-color: #000000;
+            opacity: 0;
+            animation: fadeIn 2s ease-in-out forwards; /* Fade-in animation */
+        }
+
+        /* Fade-in animation for video */
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .profile-container {
+            position: relative;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 2;
+        }
+
+        .profile-pic {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: url('assets/invisible.png') center center no-repeat;
+            background-size: cover;
+            position: absolute;
+            top: -210px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 0px solid #000000;
+        }
+
+        .username {
+            font-size: 40px;
+            font-weight: normal;
+            margin-top: -90px;
+            position: relative;
+            text-shadow: 1px 1px 20px rgba(0, 0, 0, 1); /* Shadow added here */
+            background-image: url(assets/black_particle.gif);
+            filter: drop-shadow(#000000 1px 0 7px);
+        }
+
+        /* Particle effect container around username */
+        .particle-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .icon-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 60px;   
+        }
+
+        .icon {
+            width: 40px;
+            height: 40px;
+            cursor: url('assets/cursor.cur'), auto; /* Custom cursor for icons */
+            transition: transform 0.3s ease-in-out; /* Transition for scaling */
+            filter: drop-shadow(#000000 1px 0 7px);
+        }
+
+        .icon:hover {
+            transform: scale(1.2); /* Scale the icon by 20% */
+        }
+
+        .black-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            z-index: 4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: url('assets/cursor.cur'), auto; /* Custom cursor for overlay */
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .raindrop {
+            position: absolute;
+            top: -10%;
+            width: 3px;
+            height: 3px;
+            background: white;
+            opacity: 0.4;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(0) translateX(0); opacity: 0.2; }
+            100% { transform: translateY(120vh) translateX(calc(-10px + 20px * var(--direction))); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Background Video -->
+<video id="backgroundVideo" muted loop>
+    <source src="assets/background.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
+
+<!-- Black Blur Overlay -->
+<div class="black-overlay" id="blackOverlay"></div>
+
+<!-- Profile Container -->
+<div class="profile-container">
+    <div class="profile-pic"></div>
+    <div class="username" id="username">eseire</div>
+    <div class="particle-container" id="particleContainer"></div> <!-- Particle container -->
+    <div class="icon-container">
+        <a href="https://discord.com/users/1299128956255207494" target="_blank">
+            <img src="assets/discord_logo.svg" class="icon" alt="Discord">
+        </a>
+        <a href="https://tiktok.com/@eseire" target="_blank">
+            <img src="assets/tiktok_logo.svg" class="icon" alt="TikTok">
+        </a>
+        <a href="https://instagram.com/xanturnmetoazombi" target="_blank">
+            <img src="assets/instagram_logo.svg" class="icon" alt="Instagram">
+        </a>
+    </div>
+</div>
+
+<div class="rain" id="rainEffect"></div>
+
+<audio id="backgroundMusic" loop>
+    <source src="assets/music.mp3" type="audio/mpeg">
+    Your browser does not support the audio tag.
+</audio>
+
+<script>
+    // Generate raindrops with random positions and speeds
+    const rainContainer = document.getElementById('rainEffect');
+    const raindropCount = 100;
+
+    for (let i = 0; i < raindropCount; i++) {
+        const raindrop = document.createElement('div');
+        raindrop.classList.add('raindrop');
+        raindrop.style.left = Math.random() * 100 + 'vw';
+        raindrop.style.animationDuration = 2 + Math.random() * 1 + 's';
+        raindrop.style.animationDelay = Math.random() * -5 + 's';
+        raindrop.style.setProperty('--direction', Math.random() * 2 - 1);
+        rainContainer.appendChild(raindrop);
+    }
+
+    // Play the background music and start video after overlay fade-out
+    const blackOverlay = document.getElementById('blackOverlay');
+    const music = document.getElementById('backgroundMusic');
+    const video = document.getElementById('backgroundVideo');
+
+    blackOverlay.addEventListener('click', () => {
+        music.volume = 0;
+        music.play();
+
+        // Gradually increase music volume
+        let volumeIncreaseInterval = setInterval(() => {
+            if (music.volume < 1) {
+                music.volume = Math.min(music.volume + 0.1, 1);
+            } else {
+                clearInterval(volumeIncreaseInterval);
+            }
+        }, 200);
+
+        // Fade out overlay and show video
+        blackOverlay.style.opacity = '0';
+
+        setTimeout(() => {
+            blackOverlay.style.display = 'none';
+            video.style.display = 'block';
+            video.play();
+        }, 0);
+    });
+
+    // Generate floating particles near the username
+    const particleContainer = document.getElementById('particleContainer');
+    const particleCount = 20;
+
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        particle.style.setProperty('--dx', Math.random() * 2 - 1);
+        particle.style.setProperty('--dy', Math.random() * 2 - 1);
+        particleContainer.appendChild(particle);
+    }
+
+    // Typing and Deleting Effect for browser title
+    const originalTitle = "@eseire";
+    const deleteSpeed = 300; // Speed for deleting characters
+    const typeSpeed = 300; // Speed for typing characters
+    let index = 0;
+    let isDeleting = false;
+
+    // Function to update the title character by character
+    function animateTitle() {
+        if (!isDeleting) {
+            if (index < originalTitle.length) {
+                document.title = originalTitle.substring(0, index + 1);
+                index++;
+                setTimeout(animateTitle, typeSpeed); // Type characters
+            } else {
+                isDeleting = true;
+                setTimeout(animateTitle, 0); // Pause before starting to delete
+            }
+        } else {
+            if (index > 1) {
+                document.title = originalTitle.substring(0, index - 1);
+                index--;
+                setTimeout(animateTitle, deleteSpeed); // Delete characters
+            } else {
+                isDeleting = false;
+                setTimeout(animateTitle, 0); // Pause before starting to type again
+            }
+        }
+    }
+
+    // Start the title animation
+    animateTitle();
+</script>
+
+</body>
+</html>
