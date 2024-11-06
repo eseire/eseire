@@ -43,6 +43,7 @@
             display: none;
             background-color: #000000;
             opacity: 0;
+            pointer-events: none; /* Prevent any interaction with the video */
             animation: fadeIn 2s ease-in-out forwards; /* Fade-in animation */
         }
 
@@ -156,12 +157,21 @@
             0% { transform: translateY(0) translateX(0); opacity: 0.2; }
             100% { transform: translateY(120vh) translateX(calc(-10px + 20px * var(--direction))); opacity: 0; }
         }
+
+        /* Media Query for Mobile Devices */
+        @media (max-width: 768px) {
+            #backgroundVideo {
+                width: 100%;
+                height: auto;
+                max-height: 50vh; /* Set max height for mobile */
+            }
+        }
     </style>
 </head>
 <body>
 
 <!-- Background Video -->
-<video id="backgroundVideo" muted loop>
+<video id="backgroundVideo" muted loop autoplay playsinline>
     <source src="assets/background.mp4" type="video/mp4">
     Your browser does not support the video tag.
 </video>
@@ -237,18 +247,6 @@
         }, 0);
     });
 
-    // Generate floating particles near the username
-    const particleContainer = document.getElementById('particleContainer');
-    const particleCount = 20;
-
-    for (let i = 0; i < particleCount; i++) {
-        const particle = document.createElement('div');
-        particle.classList.add('particle');
-        particle.style.setProperty('--dx', Math.random() * 2 - 1);
-        particle.style.setProperty('--dy', Math.random() * 2 - 1);
-        particleContainer.appendChild(particle);
-    }
-
     // Typing and Deleting Effect for browser title
     const originalTitle = "@eseire";
     const deleteSpeed = 300; // Speed for deleting characters
@@ -261,15 +259,6 @@
         if (!isDeleting) {
             if (index < originalTitle.length) {
                 document.title = originalTitle.substring(0, index + 1);
-                index++;
-                setTimeout(animateTitle, typeSpeed); // Type characters
-            } else {
-                isDeleting = true;
-                setTimeout(animateTitle, 0); // Pause before starting to delete
-            }
-        } else {
-            if (index > 1) {
-                document.title = originalTitle.substring(0, index - 1);
                 index--;
                 setTimeout(animateTitle, deleteSpeed); // Delete characters
             } else {
