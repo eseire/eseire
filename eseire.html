@@ -158,7 +158,14 @@
             100% { transform: translateY(120vh) translateX(calc(-10px + 20px * var(--direction))); opacity: 0; }
         }
 
-
+        /* Media Query for Mobile Devices */
+        @media (max-width: 768px) {
+            #backgroundVideo {
+                width: 100%;
+                height: auto;
+                max-height: 50vh; /* Set max height for mobile */
+            }
+        }
     </style>
 </head>
 <body>
@@ -252,6 +259,15 @@
         if (!isDeleting) {
             if (index < originalTitle.length) {
                 document.title = originalTitle.substring(0, index + 1);
+                index++;
+                setTimeout(animateTitle, typeSpeed); // Type characters
+            } else {
+                isDeleting = true;
+                setTimeout(animateTitle, 0); // Pause before starting to delete
+            }
+        } else {
+            if (index > 1) {
+                document.title = originalTitle.substring(0, index - 1);
                 index--;
                 setTimeout(animateTitle, deleteSpeed); // Delete characters
             } else {
