@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@eseire</title>
+    <title></title>
     
     <!-- Favicon link (add your logo file path) -->
     <link rel="icon" href="assets/logo.ico" type="image/x-icon"> <!-- Replace 'assets/logo.ico' with your actual logo file path -->
@@ -258,7 +258,7 @@
     // Typing and Deleting Effect for browser title
     const originalTitle = "@eseire";
     const deleteSpeed = 300; // Speed for deleting text in milliseconds
-    const typingSpeed = 150; // Speed for typing text in milliseconds
+    const typingSpeed = 300; // Speed for typing text in milliseconds
 
     let titleIndex = 0;
     let titleDeleteIndex = originalTitle.length;
@@ -270,20 +270,20 @@
             titleIndex++;
             setTimeout(typeTitle, typingSpeed);
         } else {
-            setTimeout(deleteTitle, 500); // Start deleting after typing
+            setTimeout(deleteTitle, 0); // Start deleting after typing
         }
     }
 
     // Deleting effect function
     function deleteTitle() {
-        if (titleDeleteIndex >= 0) {
+        if (titleDeleteIndex >= 1) {
             document.title = document.title.slice(0, titleDeleteIndex);
             titleDeleteIndex--;
             setTimeout(deleteTitle, deleteSpeed);
         } else {
-            titleIndex = 0;
+            titleIndex = 1;
             titleDeleteIndex = originalTitle.length;
-            setTimeout(typeTitle, 1000); // Start typing again after deleting
+            setTimeout(typeTitle, 0); // Start typing again after deleting
         }
     }
 
